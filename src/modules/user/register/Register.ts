@@ -1,7 +1,7 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import argon2 from "argon2";
-import { User } from "../../entity/User";
-import { RegisterInput } from "./register/RegisterInput";
+import { User } from "../../../entity/User";
+import { RegisterInput } from "./RegisterInput";
 
 @Resolver()
 export class RegisterResolver {

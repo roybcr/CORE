@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import cors from "cors";
-import Redis from "ioredis";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import express from "express";
@@ -9,9 +8,12 @@ import connectRedis from "connect-redis";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { ApolloServer } from "apollo-server-express";
-import { RegisterResolver } from "./modules/user/Register";
+import { RegisterResolver } from "./modules/user/register/Register";
 import { User } from "./entity/User";
-
+import { redis } from "./redis/redis";
+import { LoginResolver } from "./modules/user/login/Login";
+import { MeResolver } from "./modules/user/me/Me";
+import user from "./modules/user";
 dotenv.config();
 
 const bootstrap = async () => {
@@ -25,22 +27,34 @@ const bootstrap = async () => {
     entities: [User],
   });
 
+  const PORT = process.env.PORT;
   const schema = await buildSchema({
-    resolvers: [RegisterResolver],
+    resolvers: [user.RegisterResolver, user.MeResolver, user.LoginResolver],
+  });
+  const apolloServer = new ApolloServer({
+    schema: schema,
+    playground: {
+      settings: {
+        "request.credentials": "include",
+      },
+    },
+
+    context: ({ res, req }) => ({
+      req,
+      res,
+      redis,
+    }),
   });
 
-  const PORT = process.env.PORT;
   const app = express();
-  /* const RedisStore = connectRedis(session);
-  const redis = new Redis({ enableOfflineQueue: false }); */
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
   app.use(cors({ origin: process.env.ORIGIN_URL_DEV, credentials: true }));
   app.use(
     helmet({ contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false })
   );
 
-  /*   app.use(
+  const RedisStore = connectRedis(session);
+
+  app.use(
     session({
       name: process.env.COOKIE_NAME,
       store: new RedisStore({ client: redis as any, disableTouch: true }),
@@ -54,22 +68,7 @@ const bootstrap = async () => {
       resave: false,
       saveUninitialized: false,
     })
-  ); */
-
-  const apolloServer = new ApolloServer({
-    schema: schema,
-    playground: {
-      settings: {
-        "request.credentials": "include",
-      },
-    },
-
-    /*     context: ({ res, req }) => ({
-      req,
-      res,
-      redis,
-    }), */
-  });
+  );
 
   apolloServer.applyMiddleware({
     app,
