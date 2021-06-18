@@ -1,0 +1,10 @@
+{
+  "type": "postgres",
+  "database": "coredb",
+  "port": 5432,
+  "username": "roy",
+  "password": "§§§§",
+  "logging": true,
+  "synchronize": true,
+  "entities": ["/src/entity/*.*"]
+}
