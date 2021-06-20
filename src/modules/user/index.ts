@@ -1,5 +1,5 @@
-import { LoginResolver } from "./login/Login";
-import { RegisterResolver } from "./register/Register";
-import { MeResolver } from "./me/Me";
+import { LoginResolver } from "./Login/Login";
+import { RegisterResolver } from "./Register/Register";
+import { MeResolver } from "./Me/Me";
 
 export default { LoginResolver, RegisterResolver, MeResolver };

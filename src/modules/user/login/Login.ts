@@ -17,6 +17,10 @@ export class LoginResolver {
     const isVaild = await argon2.verify(user.password, password);
     if (!isVaild) return null;
 
+    if (!user.confirmed) {
+      throw new Error("Please confirm your email before going forward");
+    }
+
     req.session.userId = user.id;
     return user;
   }

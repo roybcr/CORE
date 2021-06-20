@@ -11,7 +11,8 @@ import { ApolloServer } from "apollo-server-express";
 import { User } from "./entity/User";
 import { redis } from "./redis/redis";
 import user from "./modules/user";
-import { ResolveTime } from "./middleware/global/resolveTime";
+import globalMiddleware from "./modules/middleware/globalMiddleware/index";
+
 dotenv.config();
 
 const bootstrap = async () => {
@@ -32,7 +33,7 @@ const bootstrap = async () => {
       return !!req.session.userId;
       // If user is logged in, he's considered authorized.
     },
-    globalMiddlewares: [ResolveTime],
+    globalMiddlewares: [globalMiddleware.resolveTime, globalMiddleware.logger],
   });
   const apolloServer = new ApolloServer({
     schema: schema,

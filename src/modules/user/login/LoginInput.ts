@@ -1,4 +1,4 @@
-import { MaxLength, IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsString } from "class-validator";
 import { Field, InputType } from "type-graphql";
 
 @InputType()

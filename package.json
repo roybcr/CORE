@@ -1,8 +1,11 @@
 {
-  "name": "server",
+  "name": "core-server",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "author": {
+    "name": "Roy Bachar",
+    "email": "roy@linity.io"
+  },
   "private": true,
   "scripts": {
     "dev": "nodemon dist/index.js",
