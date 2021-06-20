@@ -28,7 +28,13 @@ const bootstrap = async () => {
 
   const PORT = process.env.PORT;
   const schema = await buildSchema({
-    resolvers: [user.RegisterResolver, user.MeResolver, user.LoginResolver],
+    resolvers: [
+      user.RegisterResolver,
+      user.MeResolver,
+      user.LoginResolver,
+      user.ConfirmUserResolver,
+      user.ProfileResolver,
+    ],
     authChecker: ({ context: { req } }) => {
       return !!req.session.userId;
       // If user is logged in, he's considered authorized.
@@ -42,6 +48,7 @@ const bootstrap = async () => {
         "request.credentials": "include",
       },
     },
+    uploads: { maxFileSize: 10000000, maxFiles: 10 },
 
     context: ({ res, req }) => ({
       req,
@@ -51,7 +58,9 @@ const bootstrap = async () => {
   });
 
   const app = express();
-  app.use(cors({ origin: process.env.ORIGIN_URL_DEV, credentials: true }));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(cors());
   app.use(
     helmet({ contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false })
   );
