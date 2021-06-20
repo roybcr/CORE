@@ -8,12 +8,10 @@ import connectRedis from "connect-redis";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { ApolloServer } from "apollo-server-express";
-import { RegisterResolver } from "./modules/user/register/Register";
 import { User } from "./entity/User";
 import { redis } from "./redis/redis";
-import { LoginResolver } from "./modules/user/login/Login";
-import { MeResolver } from "./modules/user/me/Me";
 import user from "./modules/user";
+import { ResolveTime } from "./middleware/global/resolveTime";
 dotenv.config();
 
 const bootstrap = async () => {
@@ -30,6 +28,11 @@ const bootstrap = async () => {
   const PORT = process.env.PORT;
   const schema = await buildSchema({
     resolvers: [user.RegisterResolver, user.MeResolver, user.LoginResolver],
+    authChecker: ({ context: { req } }) => {
+      return !!req.session.userId;
+      // If user is logged in, he's considered authorized.
+    },
+    globalMiddlewares: [ResolveTime],
   });
   const apolloServer = new ApolloServer({
     schema: schema,

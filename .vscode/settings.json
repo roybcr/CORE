@@ -1,0 +1,6 @@
+{
+ "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+ "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+ "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+ "typescript.format.insertSpaceBeforeFunctionParenthesis": true
+}

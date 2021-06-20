@@ -1,12 +1,13 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import argon2 from "argon2";
 import { User } from "../../../entity/User";
 import { RegisterInput } from "./RegisterInput";
 
 @Resolver()
 export class RegisterResolver {
+  @Authorized()
   @Query(() => String)
-  async hello() {
+  async hello(): Promise<string> {
     return "Hello World";
   }
 
