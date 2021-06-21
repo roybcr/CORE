@@ -1,4 +1,4 @@
-import { PasswordInput } from "../../shared/PasswordInput";
+import { PasswordInput } from "../../../shared/PasswordInput";
 import { Field, InputType } from "type-graphql";
 
 @InputType()

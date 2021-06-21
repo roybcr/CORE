@@ -1,10 +1,10 @@
 import { Arg, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
 import argon2 from "argon2";
-import { User } from "../../../entity/User";
+import { User } from "../../../../entity/User";
 import { RegisterInput } from "./RegisterInput";
-import { isAuth } from "../../middleware/UserMiddleware/isAuth";
-import { sendEmail } from "../../utils/sendEmail/sendEmail";
-import { createConfirmationUrl } from "../../utils/createConfirmationUrl";
+import { isAuth } from "../../../middleware/UserMiddleware/isAuth";
+import { sendEmail } from "../../../utils/sendEmail/sendEmail";
+import { createConfirmationUrl } from "../../../utils/createConfirmationUrl";
 
 @Resolver()
 export class RegisterResolver {

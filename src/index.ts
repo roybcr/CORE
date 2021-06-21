@@ -6,13 +6,10 @@ import express from "express";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { createConnection } from "typeorm";
-import { buildSchema } from "type-graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "./entity/User";
 import { redis } from "./redis";
-import user from "./modules/user";
-import globalMiddleware from "./modules/middleware/globalMiddleware/index";
-
+import { createSchema } from "./lib/createSchema";
 dotenv.config();
 
 const bootstrap = async () => {
@@ -27,22 +24,7 @@ const bootstrap = async () => {
   });
 
   const PORT = process.env.PORT;
-  const schema = await buildSchema({
-    resolvers: [
-      user.RegisterResolver,
-      user.ProfileResolver,
-      user.MeResolver,
-      user.LoginResolver,
-      user.ForgotPasswordResolver,
-      user.ConfirmUserResolver,
-      user.ChangePasswordResolver,
-    ],
-    authChecker: ({ context: { req } }) => {
-      return !!req.session.userId;
-      // If user is logged in, he's considered authorized.
-    },
-    globalMiddlewares: [globalMiddleware.resolveTime, globalMiddleware.logger],
-  });
+  const schema = await createSchema();
   const apolloServer = new ApolloServer({
     schema: schema,
     playground: {

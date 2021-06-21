@@ -7,3 +7,6 @@ export const CreateForgotPasswordToken = async (userId: number) => {
   await redis.set(forgotPasswordPrefix + token, userId, "ex", 60 * 60);
   return `http://localhost:3000/user/reset-password/${token}`;
 };
+
+
+

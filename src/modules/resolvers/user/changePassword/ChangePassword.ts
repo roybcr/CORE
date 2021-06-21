@@ -1,10 +1,10 @@
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
-import { User } from "../../../entity/User";
+import { User } from "../../../../entity/User";
 import { ChangePasswordInput } from "./ChangePasswordInput";
-import { redis } from "../../../redis";
-import { forgotPasswordPrefix } from "../../constants/redisPrefixes";
+import { redis } from "../../../../redis";
+import { forgotPasswordPrefix } from "../../../constants/redisPrefixes";
 import argon2 from "argon2";
-import { MyContext } from "../../constants/MyContext";
+import { MyContext } from "../../../constants/MyContext";
 @Resolver()
 export class ChangePasswordResolver {
   @Mutation(() => User, { nullable: true })
