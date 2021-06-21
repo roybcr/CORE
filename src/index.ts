@@ -9,7 +9,7 @@ import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "./entity/User";
-import { redis } from "./redis/redis";
+import { redis } from "./redis";
 import user from "./modules/user";
 import globalMiddleware from "./modules/middleware/globalMiddleware/index";
 
@@ -30,10 +30,12 @@ const bootstrap = async () => {
   const schema = await buildSchema({
     resolvers: [
       user.RegisterResolver,
+      user.ProfileResolver,
       user.MeResolver,
       user.LoginResolver,
+      user.ForgotPasswordResolver,
       user.ConfirmUserResolver,
-      user.ProfileResolver,
+      user.ChangePasswordResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.session.userId;
@@ -48,7 +50,7 @@ const bootstrap = async () => {
         "request.credentials": "include",
       },
     },
-    uploads: { maxFileSize: 10000000, maxFiles: 10 },
+    /* uploads: { maxFileSize: 10000000, maxFiles: 10 }, */
 
     context: ({ res, req }) => ({
       req,
