@@ -1,5 +1,5 @@
 import { createConnection } from "typeorm";
-import path from "path";
+import { User } from "../entity/User";
 export const testConn = (drop: boolean = false) => {
   return createConnection({
     type: "postgres",
@@ -10,6 +10,6 @@ export const testConn = (drop: boolean = false) => {
     database: "coredb-test",
     synchronize: drop,
     dropSchema: drop,
-    entities: [path.join(__dirname + "/entity/*.js")],
+    entities: [User],
   });
 };

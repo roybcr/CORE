@@ -38,16 +38,7 @@ export async function sendEmail(
     },
   });
 
-  transporter.sendMail(msg, (error, info) => {
-    if (error) {
-      console.log("Error occurred");
-      console.log(error.message);
-      return process.exit(1);
-    } else {
-      console.log("Message sent successfully!");
-      console.log(nodemailer.getTestMessageUrl(info));
-    }
-
-    transporter.close();
-  });
+  let info = await transporter.sendMail(msg);
+  console.log("Message sent: %s", info.messageId);
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }

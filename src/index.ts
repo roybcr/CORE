@@ -5,14 +5,24 @@ import dotenv from "dotenv";
 import express from "express";
 import session from "express-session";
 import connectRedis from "connect-redis";
-import { createConnection } from "typeorm";
-import { ApolloServer } from "apollo-server-express";
+import { createConnection, getConnection } from "typeorm";
+import { ApolloError, ApolloServer } from "apollo-server-express";
 import { User } from "./entity/User";
-import { redis } from "./redis";
+import Redis from "ioredis";
 import { createSchema } from "./lib/createSchema";
-dotenv.config();
+import { getComplexity, fieldExtensionsEstimator, simpleEstimator } from "graphql-query-complexity";
+import { COOKIE_NAME, __prod__ } from "./modules/constants/constants";
+import { logManager } from "./lib/logManager";
+import { setupErrorHandling } from "./lib/shutdown";
+import { GraphQLError } from "graphql";
+import { v4 } from "uuid";
 
+dotenv.config();
+const logger = logManager();
+
+logger.info("Loading environment...");
 const bootstrap = async () => {
+  logger.info("Connecting database...");
   await createConnection({
     type: "postgres",
     database: process.env.DATABASE_NAME,
@@ -21,26 +31,18 @@ const bootstrap = async () => {
     logging: true,
     synchronize: true,
     entities: [User],
+  }).then((connection) => {
+    if (connection.isConnected) {
+      logger.info("database connected");
+    } else {
+      logger.info("no connection");
+    }
   });
 
+  logger.info("building schema...");
   const PORT = process.env.PORT;
   const schema = await createSchema();
-  const apolloServer = new ApolloServer({
-    schema: schema,
-    playground: {
-      settings: {
-        "request.credentials": "include",
-      },
-    },
-    /* uploads: { maxFileSize: 10000000, maxFiles: 10 }, */
-
-    context: ({ res, req }) => ({
-      req,
-      res,
-      redis,
-    }),
-  });
-
+  logger.info("Creating express server...");
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -50,16 +52,63 @@ const bootstrap = async () => {
   );
 
   const RedisStore = connectRedis(session);
+  const redis = new Redis(process.env.REDIS_2_PORT);
 
+  logger.info("Creating GQL server...");
+  const apolloServer = new ApolloServer({
+    schema: schema,
+
+    context: ({ res, req }) => ({
+      req,
+      res,
+      redis,
+    }),
+    plugins: [
+      {
+        requestDidStart: () => ({
+          didResolveOperation({ request, document }) {
+            const complexity = getComplexity({
+              schema,
+              operationName: request.operationName,
+              query: document,
+              variables: request.variables,
+
+              estimators: [fieldExtensionsEstimator(), simpleEstimator({ defaultComplexity: 1 })],
+            });
+            if (complexity > 20) {
+              throw new Error(
+                `${request.operationName} Sorry, too complicated query! ${complexity} is over 20 that is the max allowed complexity.`
+              );
+            }
+
+            console.debug(`Used query complexity points:, ${complexity}`);
+          },
+        }),
+      },
+    ],
+    formatError: (error: GraphQLError) => {
+      if (error.originalError instanceof ApolloError) {
+        return error;
+      }
+
+      const errId = v4();
+      console.log("errId: ", errId);
+      console.log(error);
+
+      return new GraphQLError(`Internal Error: ${errId}`);
+    },
+  });
+
+  logger.info("Initializing new session");
   app.use(
     session({
-      name: process.env.COOKIE_NAME,
+      name: COOKIE_NAME,
       store: new RedisStore({ client: redis as any, disableTouch: true }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
         sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        secure: __prod__,
       },
       secret: process.env.COOKIE_SECRET as string[] | "e3h92h98fhhe8hs883h",
       resave: false,
@@ -70,13 +119,19 @@ const bootstrap = async () => {
   apolloServer.applyMiddleware({
     app,
     cors: {
-      origin: "http://localhost:3000",
+      origin: __prod__ ? "https://linity.io" : process.env.CORS_ORIGIN,
       credentials: true,
     },
   });
 
-  app.listen(PORT, () => {
-    console.log(`🪐  Server listening on port: ${PORT} 🪐`);
+  const nodeServer = app.listen(PORT, () => {
+    logger.info(`Server ready on port: ${PORT}`);
+  });
+
+  setupErrorHandling({
+    db: getConnection(),
+    logger: logger,
+    nodeServer: nodeServer,
   });
 };
 
