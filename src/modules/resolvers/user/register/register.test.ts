@@ -1,7 +1,7 @@
 import { Connection } from "typeorm";
 import { testConn } from "../../../../test-utils/testConn";
 import { gqlCall } from "../../../../test-utils/gqlCall";
-import { closeInstance } from "../../../../lib/redis";
+import { redis } from "../../../../lib/redis";
 
 let conn: Connection;
 beforeAll(async () => {
@@ -9,9 +9,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  closeInstance(async () => {
-    await conn.close();
-  });
+  redis.disconnect();
+  await conn.close();
 });
 const registerMutatuion = `
 
