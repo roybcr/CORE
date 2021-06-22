@@ -8,7 +8,7 @@ import connectRedis from "connect-redis";
 import { createConnection, getConnection } from "typeorm";
 import { ApolloError, ApolloServer } from "apollo-server-express";
 import { User } from "./entity/User";
-import Redis from "ioredis";
+import { redis } from "./lib/redis";
 import { createSchema } from "./lib/createSchema";
 import { getComplexity, fieldExtensionsEstimator, simpleEstimator } from "graphql-query-complexity";
 import { COOKIE_NAME, __prod__ } from "./modules/constants/constants";
@@ -52,7 +52,6 @@ const bootstrap = async () => {
   );
 
   const RedisStore = connectRedis(session);
-  const redis = new Redis(process.env.REDIS_2_PORT);
 
   logger.info("Creating GQL server...");
   const apolloServer = new ApolloServer({

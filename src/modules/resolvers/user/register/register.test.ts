@@ -1,6 +1,7 @@
 import { Connection } from "typeorm";
 import { testConn } from "../../../../test-utils/testConn";
 import { gqlCall } from "../../../../test-utils/gqlCall";
+import { closeInstance } from "../../../../lib/redis";
 
 let conn: Connection;
 beforeAll(async () => {
@@ -8,7 +9,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await conn.close();
+  closeInstance(async () => {
+    await conn.close();
+  });
 });
 const registerMutatuion = `
 
@@ -27,8 +30,8 @@ describe("Register", () => {
         source: registerMutatuion,
         variableValues: {
           registerInput: {
-            username: "aaaf",
-            email: "aaka@aaa.com",
+            username: "sasa",
+            email: "sa@aaa.com",
             password: "12345",
           },
         },
