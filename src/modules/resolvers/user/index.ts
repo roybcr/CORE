@@ -1,11 +1,11 @@
-import { LoginResolver } from "./login/Login";
-import { RegisterResolver } from "./register/Register";
-import { MeResolver } from "./me/Me";
-import { ConfirmUserResolver } from "./confirmUser/ConfirmUser";
-import { ProfileResolver } from "./profile/ProfileResolver";
-import { ForgotPasswordResolver } from "./forgotPassword/ForgotPassword";
-import { ChangePasswordResolver } from "./changePassword/ChangePassword";
-import { LogoutResolver } from "./logout/Logout";
+import { LoginResolver } from './login/Login';
+import { RegisterResolver } from './register/Register';
+import { MeResolver } from './me/Me';
+import { ConfirmUserResolver } from './confirmUser/ConfirmUser';
+import { ProfileResolver } from './profile/ProfileResolver';
+import { ForgotPasswordResolver } from './forgotPassword/ForgotPassword';
+import { ChangePasswordResolver } from './changePassword/ChangePassword';
+import { LogoutResolver } from './logout/Logout';
 export default {
   LoginResolver,
   RegisterResolver,
@@ -14,5 +14,5 @@ export default {
   ProfileResolver,
   ForgotPasswordResolver,
   ChangePasswordResolver,
-  LogoutResolver,
+  LogoutResolver
 };

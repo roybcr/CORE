@@ -2,11 +2,11 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from "class-validator";
-import { User } from "../../../../entity/User";
+  ValidatorConstraintInterface
+} from 'class-validator';
+import { User } from '../../../../entity/User';
 
-@ValidatorConstraint({ async: true })
+@ValidatorConstraint({ name: 'UsernameAlreadyExists', async: true })
 export class IsUsernameAlreadyExistConstraint implements ValidatorConstraintInterface {
   async validate(username: string): Promise<boolean> {
     return User.findOne({ where: { username } }).then((user) => {
@@ -18,15 +18,15 @@ export class IsUsernameAlreadyExistConstraint implements ValidatorConstraintInte
     });
   }
 }
-
 export function IsUsernameAlreadyExist(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  return function (object: Object, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       constraints: [],
-      validator: IsUsernameAlreadyExistConstraint,
+      validator: IsUsernameAlreadyExistConstraint
     });
   };
 }

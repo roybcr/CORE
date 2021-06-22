@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Connection } from 'typeorm';
 import { testConn } from '../../../../test-utils/testConn';
 import { gqlCall } from '../../../../test-utils/gqlCall';
@@ -15,45 +14,54 @@ afterAll(async () => {
   redis.disconnect();
   await conn.close();
 });
-const registerMutatuion = `
+const meQuery = `
 
-mutation Register($registerInput: RegisterInput!) {
-  register(registerInput: $registerInput) {
+{
+ me {
     username
     id
     email     
+    firstName
+    lastName
   }
 }`;
 
-describe('Register', () => {
-  it('create user', async () => {
-    const user = {
+describe('Me', () => {
+  it('get user', async () => {
+    const user = await User.create({
       username: faker.internet.userName(),
       email: faker.internet.email(),
       password: faker.internet.password()
-    };
+    }).save();
 
     const response = await gqlCall({
-      source: registerMutatuion,
-      variableValues: {
-        registerInput: user
-      }
+      source: meQuery,
+      userId: user.id
     });
+
+    console.log('Response, ' + JSON.stringify(response));
 
     expect(response).toMatchObject({
       data: {
-        register: {
+        me: {
+          id: `${user.id}`,
+          email: user.email,
           username: user.username,
-          email: user.email
+          firstName: null,
+          lastName: null
         }
       }
     });
+  });
 
-    const dbUser = await User.findOne({ where: { email: user.email } });
-    expect(dbUser).toBeDefined();
-    expect(dbUser!.confirmed).toBeFalsy();
-    expect(dbUser!.username).toBe(user.username);
-    expect(dbUser!.firstName).toBeNull();
-    expect(dbUser!.lastName).toBeNull();
+  it('return null', async () => {
+    const response = await gqlCall({ source: meQuery });
+    expect(response).toMatchObject({
+      data: {
+        me: null
+      }
+    });
+
+    console.log('Response, ' + JSON.stringify(response));
   });
 });

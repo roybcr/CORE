@@ -6,5 +6,5 @@ export enum Roles {
   CREATOR,
   LEARNER,
   WATCHER,
-  GUEST,
+  GUEST
 }

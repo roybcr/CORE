@@ -1,7 +1,10 @@
-import { MyContext } from "src/modules/constants/MyContext";
-import { MiddlewareFn } from "type-graphql";
+import { MyContext } from 'src/modules/constants/MyContext';
+import { MiddlewareFn } from 'type-graphql';
 
 export const logger: MiddlewareFn<MyContext> = async ({ args }, next) => {
-  console.log("args: ", args);
+  if (Object.entries(args).length > 0) {
+    console.log('args: ', args);
+  }
+
   return next();
 };

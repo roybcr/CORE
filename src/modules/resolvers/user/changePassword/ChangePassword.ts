@@ -1,14 +1,15 @@
-import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
-import { User } from "../../../../entity/User";
-import { ChangePasswordInput } from "./ChangePasswordInput";
-import { FORGET_PASSWORD_PREFIX } from "../../../constants/constants";
-import argon2 from "argon2";
-import { MyContext } from "../../../constants/MyContext";
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
+import { User } from '../../../../entity/User';
+import { ChangePasswordInput } from './ChangePasswordInput';
+import { FORGET_PASSWORD_PREFIX } from '../../../constants/constants';
+import argon2 from 'argon2';
+import { MyContext } from '../../../constants/MyContext';
 @Resolver()
 export class ChangePasswordResolver {
   @Mutation(() => User, { nullable: true })
   async changePassword(
-    @Arg("input", () => ChangePasswordInput) { token, password }: ChangePasswordInput,
+    @Arg('input', () => ChangePasswordInput)
+    { token, password }: ChangePasswordInput,
     @Ctx() { req, redis }: MyContext
   ): Promise<User | null> {
     const userId = await redis.get(FORGET_PASSWORD_PREFIX + token);

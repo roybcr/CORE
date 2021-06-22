@@ -1,5 +1,5 @@
-import { MyContext } from "../../../constants/MyContext";
-import { Resolver, Mutation, Ctx } from "type-graphql";
+import { MyContext } from '../../../constants/MyContext';
+import { Resolver, Mutation, Ctx } from 'type-graphql';
 
 @Resolver()
 export class LogoutResolver {
@@ -11,7 +11,7 @@ export class LogoutResolver {
           return reject(err);
         }
 
-        ctx.res.clearCookie("qid");
+        ctx.res.clearCookie('qid');
         resolve(true);
       })
     );

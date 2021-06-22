@@ -1,9 +1,9 @@
-import { IEmailTemplate } from "../../types/Email";
+import { IEmailTemplate } from '../../types/Email';
 
 export const passwordResetEmail = (url: string, to: string): IEmailTemplate => {
   return {
     to: `<${to}>`,
-    subject: "We got your request to change your password!",
+    subject: 'We got your request to change your password!',
     text: "Just so you know: you have 24 hours to pick your password. After that, you'll have to ask for a new one.",
     html: `
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; border: 1px solid #f0f2f5; border-radius: 4px; background-color: #fff height: 100%; align-content: center;">
@@ -19,6 +19,6 @@ export const passwordResetEmail = (url: string, to: string): IEmailTemplate => {
     </div>
     </a>
     </div>
-    `,
+    `
   };
 };

@@ -1,6 +1,6 @@
-import "reflect-metadata";
-import { Field, ID, ObjectType, Root } from "type-graphql";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import 'reflect-metadata';
+import { Field, ID, ObjectType, Root } from 'type-graphql';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
 
 @ObjectType()
 @Entity()
@@ -10,7 +10,7 @@ export class User extends BaseEntity {
   id: number;
 
   @Field()
-  @Column("text", { unique: true })
+  @Column('text', { unique: true })
   username: string;
 
   @Field(() => String, { nullable: true })
@@ -27,12 +27,12 @@ export class User extends BaseEntity {
   }
 
   @Field()
-  @Column("text", { unique: true })
+  @Column('text', { unique: true })
   email: string;
 
   @Column()
   password: string;
 
-  @Column("bool", { default: false })
+  @Column('bool', { default: false })
   confirmed: boolean;
 }

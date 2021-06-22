@@ -1,66 +1,66 @@
-import "reflect-metadata";
-import cors from "cors";
-import helmet from "helmet";
-import dotenv from "dotenv";
-import express from "express";
-import session from "express-session";
-import connectRedis from "connect-redis";
-import { createConnection, getConnection } from "typeorm";
-import { ApolloError, ApolloServer } from "apollo-server-express";
-import { User } from "./entity/User";
-import { redis } from "./lib/redis";
-import { createSchema } from "./lib/createSchema";
-import { getComplexity, fieldExtensionsEstimator, simpleEstimator } from "graphql-query-complexity";
-import { COOKIE_NAME, __prod__ } from "./modules/constants/constants";
-import { logManager } from "./lib/logManager";
-import { setupErrorHandling } from "./lib/shutdown";
-import { GraphQLError } from "graphql";
-import { v4 } from "uuid";
+import 'reflect-metadata';
+import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import express from 'express';
+import session from 'express-session';
+import connectRedis from 'connect-redis';
+import { createConnection, getConnection } from 'typeorm';
+import { ApolloServer } from 'apollo-server-express';
+import { User } from './entity/User';
+import { redis } from './lib/redis';
+import { createSchema } from './lib/createSchema';
+import { getComplexity, fieldExtensionsEstimator, simpleEstimator } from 'graphql-query-complexity';
+import { COOKIE_NAME, __prod__ } from './modules/constants/constants';
+import { logManager } from './lib/logManager';
+import { setupErrorHandling } from './lib/shutdown';
 
 dotenv.config();
 const logger = logManager();
 
-logger.info("Loading environment...");
+logger.info('Loading environment...');
 const bootstrap = async () => {
-  logger.info("Connecting database...");
+  logger.info('Connecting database...');
   await createConnection({
-    type: "postgres",
+    type: 'postgres',
     database: process.env.DATABASE_NAME,
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     logging: true,
     synchronize: true,
-    entities: [User],
+    entities: [User]
   }).then((connection) => {
     if (connection.isConnected) {
-      logger.info("database connected");
+      logger.info('database connected');
     } else {
-      logger.info("no connection");
+      logger.info('no connection');
     }
   });
 
-  logger.info("building schema...");
+  logger.info('building schema...');
   const PORT = process.env.PORT;
   const schema = await createSchema();
-  logger.info("Creating express server...");
+  logger.info('Creating express server...');
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(
-    helmet({ contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false })
+    helmet({
+      contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false
+    })
   );
 
   const RedisStore = connectRedis(session);
 
-  logger.info("Creating GQL server...");
+  logger.info('Creating GQL server...');
   const apolloServer = new ApolloServer({
     schema: schema,
 
     context: ({ res, req }) => ({
       req,
       res,
-      redis,
+      redis
     }),
     plugins: [
       {
@@ -72,7 +72,7 @@ const bootstrap = async () => {
               query: document,
               variables: request.variables,
 
-              estimators: [fieldExtensionsEstimator(), simpleEstimator({ defaultComplexity: 1 })],
+              estimators: [fieldExtensionsEstimator(), simpleEstimator({ defaultComplexity: 1 })]
             });
             if (complexity > 20) {
               throw new Error(
@@ -81,46 +81,35 @@ const bootstrap = async () => {
             }
 
             console.debug(`Used query complexity points:, ${complexity}`);
-          },
-        }),
-      },
-    ],
-    formatError: (error: GraphQLError) => {
-      if (error.originalError instanceof ApolloError) {
-        return error;
+          }
+        })
       }
-
-      const errId = v4();
-      console.log("errId: ", errId);
-      console.log(error);
-
-      return new GraphQLError(`Internal Error: ${errId}`);
-    },
+    ]
   });
 
-  logger.info("Initializing new session");
+  logger.info('Initializing new session');
   app.use(
     session({
       name: COOKIE_NAME,
-      store: new RedisStore({ client: redis as any, disableTouch: true }),
+      store: new RedisStore({ client: redis, disableTouch: true }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
-        sameSite: "lax",
-        secure: __prod__,
+        sameSite: 'lax',
+        secure: __prod__
       },
-      secret: process.env.COOKIE_SECRET as string[] | "e3h92h98fhhe8hs883h",
+      secret: process.env.COOKIE_SECRET as string[] | 'e3h92h98fhhe8hs883h',
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: false
     })
   );
 
   apolloServer.applyMiddleware({
     app,
     cors: {
-      origin: __prod__ ? "https://linity.io" : process.env.CORS_ORIGIN,
-      credentials: true,
-    },
+      origin: __prod__ ? 'https://linity.io' : process.env.CORS_ORIGIN,
+      credentials: true
+    }
   });
 
   const nodeServer = app.listen(PORT, () => {
@@ -130,7 +119,7 @@ const bootstrap = async () => {
   setupErrorHandling({
     db: getConnection(),
     logger: logger,
-    nodeServer: nodeServer,
+    nodeServer: nodeServer
   });
 };
 

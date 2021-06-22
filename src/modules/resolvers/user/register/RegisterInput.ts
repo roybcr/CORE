@@ -1,19 +1,25 @@
-import { MaxLength, IsEmail, MinLength } from "class-validator";
-import { PasswordInput } from "../../../shared/PasswordInput";
-import { Field, InputType } from "type-graphql";
-import { IsEmailAlreadyExist } from "./IsEmailAlreadyExist";
-import { IsUsernameAlreadyExist } from "./IsUsernameAlreadyExists";
+import { MaxLength, IsEmail, MinLength } from 'class-validator';
+import { PasswordInput } from '../../../shared/PasswordInput';
+import { Field, InputType } from 'type-graphql';
+import { IsEmailAlreadyExist } from './IsEmailAlreadyExist';
+import { IsUsernameAlreadyExist } from './IsUsernameAlreadyExists';
+import {
+  longInputError,
+  shortInputError,
+  usernameAlreadyExistsError,
+  emailAlreadyExistsError
+} from '../../../../modules/utils/errorMessages';
 
 @InputType()
 export class RegisterInput extends PasswordInput {
   @Field()
-  @IsUsernameAlreadyExist({ message: "Someone already has that username. Try another?" })
-  @MinLength(3, { message: "username must be longer than or equal to 3 characters" })
-  @MaxLength(16, { message: "username must be shorter than or equal to 16 characters" })
+  @IsUsernameAlreadyExist({ message: usernameAlreadyExistsError })
+  @MinLength(3, { message: shortInputError('username', 3) })
+  @MaxLength(16, { message: longInputError('username', 16) })
   username: string;
 
   @Field()
-  @IsEmailAlreadyExist({ message: "It looks like there's already an account with this email." })
+  @IsEmailAlreadyExist({ message: emailAlreadyExistsError })
   @IsEmail()
   email: string;
 }

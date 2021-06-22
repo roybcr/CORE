@@ -1,0 +1,15 @@
+{
+  "singleQuote": true,
+  "trailingComma": "none",
+  "jsxBracketSameLine": true,
+  "printWidth": 100,
+
+  "overrides": [
+    {
+      "files": "/src/**/*.ts",
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ]
+}
