@@ -6,6 +6,7 @@ import { ProfileResolver } from './profile/ProfileResolver';
 import { ForgotPasswordResolver } from './forgotPassword/ForgotPassword';
 import { ChangePasswordResolver } from './changePassword/ChangePassword';
 import { LogoutResolver } from './logout/Logout';
+import { ResendConfirmationEmailResolver } from './resendConfirmationEmail/ResendConfiirmationEmail';
 export default {
   LoginResolver,
   RegisterResolver,
@@ -14,5 +15,6 @@ export default {
   ProfileResolver,
   ForgotPasswordResolver,
   ChangePasswordResolver,
-  LogoutResolver
+  LogoutResolver,
+  ResendConfirmationEmailResolver
 };

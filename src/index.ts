@@ -11,7 +11,7 @@ import { User } from './entity/User';
 import { redis } from './lib/redis';
 import { createSchema } from './lib/createSchema';
 import { getComplexity, fieldExtensionsEstimator, simpleEstimator } from 'graphql-query-complexity';
-import { COOKIE_NAME, __prod__ } from './modules/constants/constants';
+import { COOKIE_NAME, REDIS_SESSION_PREFIX, __prod__ } from './modules/constants/constants';
 import { logManager } from './lib/logManager';
 import { setupErrorHandling } from './lib/shutdown';
 
@@ -91,7 +91,7 @@ const bootstrap = async () => {
   app.use(
     session({
       name: COOKIE_NAME,
-      store: new RedisStore({ client: redis, disableTouch: true }),
+      store: new RedisStore({ client: redis, disableTouch: true, prefix: REDIS_SESSION_PREFIX }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,

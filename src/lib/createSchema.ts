@@ -6,6 +6,7 @@ import { ProfileResolver } from '../modules/resolvers/user/profile/ProfileResolv
 import { ForgotPasswordResolver } from '../modules/resolvers/user/forgotPassword/ForgotPassword';
 import { ChangePasswordResolver } from '../modules/resolvers/user/changePassword/ChangePassword';
 import { LogoutResolver } from '../modules/resolvers/user/logout/Logout';
+import { ResendConfirmationEmailResolver } from '../modules/resolvers/user/resendConfirmationEmail/ResendConfiirmationEmail';
 import { buildSchema } from 'type-graphql';
 import globalMiddleware from '../modules/middleware/globalMiddleware/index';
 import { GraphQLSchema } from 'graphql';
@@ -19,7 +20,8 @@ export const createSchema = (): Promise<GraphQLSchema> =>
       ProfileResolver,
       ForgotPasswordResolver,
       ChangePasswordResolver,
-      LogoutResolver
+      LogoutResolver,
+      ResendConfirmationEmailResolver
     ],
 
     authChecker: ({ context: { req } }) => {
