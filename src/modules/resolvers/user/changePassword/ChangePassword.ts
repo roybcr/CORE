@@ -22,7 +22,7 @@ export class ChangePasswordResolver {
     user.password = await argon2.hash(password);
     await user.save();
 
-    req.session.userId = user.id; // Login the user automatically after he changes password
+    req.session.userId = user.id; // To log the user in right after he changes password
     return user;
   }
 }

@@ -8,7 +8,7 @@ export interface ShutdownOptions {
   logger: pino.Logger;
   nodeServer: Server;
 }
-// that all logging gets performed before process exit.
+
 const shutdown = async (config: ShutdownOptions): Promise<void> => {
   config.logger.warn('Shutting down HTTP server.');
   config.nodeServer.close(() => {

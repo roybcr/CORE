@@ -107,7 +107,7 @@ const bootstrap = async () => {
   apolloServer.applyMiddleware({
     app,
     cors: {
-      origin: __prod__ ? 'https://linity.io' : process.env.CORS_ORIGIN,
+      origin: __prod__ ? process.env.CORS_ORIGIN_PROD : process.env.CORS_ORIGIN,
       credentials: true
     }
   });

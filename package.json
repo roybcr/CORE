@@ -4,9 +4,8 @@
   "license": "MIT",
   "author": {
     "name": "Roy Bachar",
-    "email": "roy@linity.io"
+    "email": "roybcx@pm.me"
   },
-  "private": true,
   "scripts": {
     "dev": "nodemon --exec && ts-node src/index.ts",
     "watch": "tsc -w",
